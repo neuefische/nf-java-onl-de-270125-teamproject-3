@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,6 +52,26 @@ class MovieServiceTest {
     }
 
     @Test
-    void getMovie() {
+    void getMovie_whenNotFound_returnEmptyOptional() {
+        // GIVEN
+        Optional<MovieData> expected = Optional.empty();
+        when(repo.findById("3")).thenReturn(expected);
+        // WHEN
+        Optional<MovieData> actual = service.getMovie("3");
+        // THEN
+        verify(repo).findById("3");
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void getMovie_whenFound_returnMovie() {
+        // GIVEN
+        Optional<MovieData> expected = Optional.ofNullable(movie1);
+        when(repo.findById("1")).thenReturn(expected);
+        // WHEN
+        Optional<MovieData> actual = service.getMovie("1");
+        // THEN
+        verify(repo).findById("1");
+        assertEquals(expected, actual);
     }
 }
