@@ -21,4 +21,15 @@ public class MovieService
     public Optional<MovieData> getMovie(String id) {
         return movieRepo.findById(id);
     }
+
+    public boolean deleteMovie(String id)
+    {
+        if (movieRepo.existsById(id))
+        {
+            movieRepo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
 }

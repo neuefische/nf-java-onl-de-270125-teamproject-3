@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -93,4 +94,28 @@ class MovieIntegrationTest {
                 // THEN
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DirtiesContext
+    void deleteMovie_whenFound_removesMovie() throws Exception
+    {
+        // GIVEN
+        MovieData movie = new MovieData("1", "Test Movie", "Test Director", 2000);
+        movieRepo.save(movie);
+
+        // WHEN & THEN
+        mvc.perform(delete("/api/movie/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteMovie_whenNotFound_returnsNotFound() throws Exception
+    {
+        // WHEN & THEN
+        mvc.perform(delete("/api/movie/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 }
