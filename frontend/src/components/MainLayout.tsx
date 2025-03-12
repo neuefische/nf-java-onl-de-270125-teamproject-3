@@ -19,7 +19,7 @@ import {
     CardMedia,
     CardContent,
 } from "@mui/material";
-// @ts-expect-error Grid2 typing issue expected
+// @ts-ignore: Grid2 is typed incorrectly in the current version
 import Grid2 from "@mui/material/Grid2";
 import MenuIcon from "@mui/icons-material/Menu";
 import AddIcon from "@mui/icons-material/Add";
@@ -157,6 +157,7 @@ const MainLayout: React.FC = () => {
                     {/* Movie Grid */}
                     <Grid2 container spacing={3}>
                         {movies.map((movie) => (
+                            // @ts-expect-error: Component requires props not yet typed
                             <Grid2
                                 xs={12}
                                 sm={6}
