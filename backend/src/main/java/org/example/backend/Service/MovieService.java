@@ -32,4 +32,14 @@ public class MovieService
         return false;
     }
 
+    public MovieData saveMovie(MovieData newMovie){
+        if (newMovie.id().isEmpty() || newMovie.title().isEmpty() || newMovie.director().isEmpty()){
+            throw new IllegalArgumentException("Movie with empty arguments are not allowed");
+        }
+
+        if (movieRepo.findById(newMovie.id()).isPresent()){
+            throw new IllegalArgumentException("Movie with ID " + newMovie.id() + " already exists");
+        }
+        return movieRepo.save(newMovie);
+    }
 }

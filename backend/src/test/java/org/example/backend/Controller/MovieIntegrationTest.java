@@ -10,10 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -116,6 +114,24 @@ class MovieIntegrationTest {
         mvc.perform(delete("/api/movie/999")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void saveMovie_whenSaved_returnObject() throws Exception {
+        String expected = """
+        {
+            "id": "1",
+            "title":"Movie",
+            "director":"Director",
+            "releaseYear": "2025"
+        }
+        """;
+
+        mvc.perform(post("/api/movie")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(expected))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expected));
     }
 
 }

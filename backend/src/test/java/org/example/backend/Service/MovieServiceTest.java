@@ -102,4 +102,39 @@ class MovieServiceTest {
         verify(repo, never()).deleteById(anyString());
         assertFalse(deleted);
     }
+
+    @Test
+    void saveMovie_whenSuccessful_thenReturnObject() {
+        // GIVEN
+        MovieData expected = movie1;
+        when(repo.save(expected)).thenReturn(expected);
+        // WHEN
+        MovieData actual = service.saveMovie(expected);
+        // THEN
+        verify(repo).save(expected);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void saveMovie_whenDuplicateId_thenThrowException() {
+        // GIVEN
+        MovieData existingMovie = movie1;
+        when(repo.findById("1")).thenReturn(Optional.of(existingMovie));
+        MovieData duplicateMovie = movie1;
+
+        // WHEN & THEN
+        assertThrows(IllegalArgumentException.class, () -> service.saveMovie(duplicateMovie));
+        verify(repo, never()).save(any(MovieData.class));
+    }
+
+    @Test
+    void saveMovie_whenInvalidData_thenThrowException() {
+        // GIVEN
+        MovieData invalidMovie = new MovieData("", "", "", 0);
+
+        // WHEN & THEN
+        assertThrows(IllegalArgumentException.class, () -> service.saveMovie(invalidMovie));
+        verify(repo, never()).save(any(MovieData.class));
+    }
+
 }
