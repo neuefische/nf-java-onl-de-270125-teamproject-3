@@ -84,7 +84,7 @@ class MovieServiceTest {
         when(repo.save(updatedMovie)).thenReturn(updatedMovie);
 
         // WHEN
-        MovieData actual = service.updateMovie("2", updatedMovie);
+        MovieData actual = service.updateMovie(targetId, updatedMovie);
 
         // THEN
         MovieData expected = updatedMovie;
