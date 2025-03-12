@@ -74,4 +74,32 @@ class MovieServiceTest {
         verify(repo).findById("1");
         assertEquals(expected, actual);
     }
+
+    @Test
+    void deleteMovie_whenFound_deletesMovie()
+    {
+        // GIVEN
+        when(repo.existsById("1")).thenReturn(true);
+
+        // WHEN
+        boolean deleted = service.deleteMovie("1");
+
+        // THEN
+        verify(repo).deleteById("1");
+        assertTrue(deleted);
+    }
+
+    @Test
+    void deleteMovie_whenNotFound_returnsFalse()
+    {
+        // GIVEN
+        when(repo.existsById("1")).thenReturn(false);
+
+        // WHEN
+        boolean deleted = service.deleteMovie("1");
+
+        // THEN
+        verify(repo, never()).deleteById(anyString());
+        assertFalse(deleted);
+    }
 }
