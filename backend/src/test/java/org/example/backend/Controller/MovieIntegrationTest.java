@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -96,6 +97,28 @@ class MovieIntegrationTest {
 
     @Test
     @DirtiesContext
+    void deleteMovie_whenFound_removesMovie() throws Exception
+    {
+        // GIVEN
+        MovieData movie = new MovieData("1", "Test Movie", "Test Director", 2000);
+        movieRepo.save(movie);
+
+        // WHEN & THEN
+        mvc.perform(delete("/api/movie/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteMovie_whenNotFound_returnsNotFound() throws Exception
+    {
+        // WHEN & THEN
+        mvc.perform(delete("/api/movie/999")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    @DirtiesContext
     void updateMovie_whenFound_returnMovie() throws Exception {
         // GIVEN
         MovieData movie = new MovieData("1", "Number 1", "Alan Smithee", 1000);
@@ -104,14 +127,14 @@ class MovieIntegrationTest {
         mvc.perform(put("/api/movie/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(
-                          """
-                            {
-                              "id": "1",
-                              "title": "Pi",
-                              "director": "Darren Aronofsky",
-                              "releaseYear": 1999
-                            }
-                          """
+                                """
+                                  {
+                                    "id": "1",
+                                    "title": "Pi",
+                                    "director": "Darren Aronofsky",
+                                    "releaseYear": 1999
+                                  }
+                                """
                         )
                 )
                 // THEN
@@ -129,8 +152,8 @@ class MovieIntegrationTest {
     @Test
     void updateMovie_whenNotFound_throwNoSuchElementException() throws Exception {
         // GIVEN
-         String targetId = "1";
-         // movie repo is empty
+        String targetId = "1";
+        // movie repo is empty
 
         // WHEN
         mvc.perform(put("/api/movie/" + targetId)

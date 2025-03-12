@@ -20,8 +20,6 @@ public class MovieController
 {
     private final MovieService movieService;
 
-    //todo implement stuff
-
     @GetMapping
     public List<MovieData> getMovies() {
         return movieService.getMovies();
@@ -34,6 +32,16 @@ public class MovieController
             return movie.get();
         }
         throw new NoSuchElementException("Movie with ID: "+ id + " not found");
+    }
+
+    @DeleteMapping("{id}")
+    public void deleteMovie(@PathVariable String id)
+    {
+        boolean deleted = movieService.deleteMovie(id);
+        if (!deleted)
+        {
+            throw new NoSuchElementException("Movie with ID: " + id + " not found");
+        }
     }
 
     @PutMapping("{targetId}")

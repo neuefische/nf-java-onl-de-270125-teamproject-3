@@ -23,6 +23,16 @@ public class MovieService
         return movieRepo.findById(id);
     }
 
+    public boolean deleteMovie(String id)
+    {
+        if (movieRepo.existsById(id))
+        {
+            movieRepo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
     public MovieData updateMovie(String targetId, MovieData updatedMovie) {
 
         if (!movieRepo.existsById(targetId)) {
@@ -36,6 +46,4 @@ public class MovieService
         return movieRepo.save(updatedMovie);
     }
 
-    }
-
-
+}
