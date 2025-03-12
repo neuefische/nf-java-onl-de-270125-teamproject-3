@@ -75,11 +75,12 @@ class MovieServiceTest {
         verify(repo).findById("1");
         assertEquals(expected, actual);
     }
+
     @Test
     void updateMovie_whenFound_returnMovie() {
         // GIVEN
         String targetId = "2";
-        MovieData updatedMovie = new MovieData("2", "wuff", "dog", 2000);
+        MovieData updatedMovie = new MovieData(targetId, "wuff", "dog", 2000);
         when(repo.existsById(targetId)).thenReturn(true);
         when(repo.save(updatedMovie)).thenReturn(updatedMovie);
 
@@ -95,9 +96,9 @@ class MovieServiceTest {
     void updateMovie_whenNotFound_throwNoSuchElementException() {
         // GIVEN
         String targetId = "3";
-        MovieData updatedMovie = new MovieData("3", "wuff", "dog", 2000);
+        MovieData updatedMovie = new MovieData(targetId, "wuff", "dog", 2000);
         when(repo.existsById(targetId)).thenReturn(false);
-        when(repo.save(updatedMovie)).thenReturn(updatedMovie);
+        when(repo.save(updatedMovie)).thenReturn(updatedMovie); //line actually not required for test
 
         // WHEN + THEN
         assertThrows(NoSuchElementException.class, () -> service.updateMovie(targetId, updatedMovie));
@@ -107,7 +108,7 @@ class MovieServiceTest {
     void updateMovie_whenFound_throwIllegalArgumentException() {
         // GIVEN
         String targetId = "3";
-        MovieData updatedMovie = new MovieData("2", "wuff", "dog", 2000);
+        MovieData updatedMovie = new MovieData(targetId + "***", "wuff", "dog", 2000);
         when(repo.existsById(targetId)).thenReturn(true);
         when(repo.save(updatedMovie)).thenReturn(updatedMovie);
 
