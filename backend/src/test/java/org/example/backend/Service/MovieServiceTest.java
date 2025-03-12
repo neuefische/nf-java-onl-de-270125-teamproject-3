@@ -104,7 +104,7 @@ class MovieServiceTest {
     }
 
     @Test
-    void updateMovie_whenNotFound_throwIllegalArgumentException() {
+    void updateMovie_whenFound_throwIllegalArgumentException() {
         // GIVEN
         String targetId = "3";
         MovieData updatedMovie = new MovieData("2", "wuff", "dog", 2000);
