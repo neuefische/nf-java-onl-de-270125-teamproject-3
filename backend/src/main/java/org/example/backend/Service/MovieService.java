@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.DTOs.MovieDto;
 import org.example.backend.Data.MovieData;
 import org.example.backend.Data.MovieRepo;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class MovieService
 {
     private final MovieRepo movieRepo;
+    private final IdService idService;
 
     public List<MovieData> getMovies() {
         return movieRepo.findAll();
@@ -32,14 +34,9 @@ public class MovieService
         return false;
     }
 
-    public MovieData saveMovie(MovieData newMovie){
-        if (newMovie.id().isEmpty() || newMovie.title().isEmpty() || newMovie.director().isEmpty()){
-            throw new IllegalArgumentException("Movie with empty arguments are not allowed");
-        }
-
-        if (movieRepo.findById(newMovie.id()).isPresent()){
-            throw new IllegalArgumentException("Movie with ID " + newMovie.id() + " already exists");
-        }
-        return movieRepo.save(newMovie);
+    public MovieData saveMovie(MovieDto newMovie){
+        String id = idService.randomId();
+        MovieData movieToSave = new MovieData(id, newMovie.title(), newMovie.director(), newMovie.releaseYear());
+        return movieRepo.save(movieToSave);
     }
 }

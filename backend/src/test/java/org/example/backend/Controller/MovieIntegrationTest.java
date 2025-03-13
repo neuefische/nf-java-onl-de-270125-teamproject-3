@@ -30,8 +30,8 @@ class MovieIntegrationTest {
                 // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                  []
-                """));
+                          []
+                        """));
     }
 
     @Test
@@ -43,25 +43,25 @@ class MovieIntegrationTest {
         movieRepo.save(movie2);
         // WHEN
         mvc.perform(get("/api/movie")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                [
-                  {
-                    "id": "1",
-                    "title": "test",
-                    "director": "tester",
-                    "releaseYear": 2025
-                  }, 
-                  {
-                    "id": "2",
-                    "title": "meow",
-                    "director": "cat",
-                    "releaseYear": 2000
-                  }
-                ]
-                """));
+                        [
+                          {
+                            "id": "1",
+                            "title": "test",
+                            "director": "tester",
+                            "releaseYear": 2025
+                          }, 
+                          {
+                            "id": "2",
+                            "title": "meow",
+                            "director": "cat",
+                            "releaseYear": 2000
+                          }
+                        ]
+                        """));
     }
 
     @Test
@@ -75,13 +75,13 @@ class MovieIntegrationTest {
                 // THEN
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
-                  {
-                    "id": "1",
-                    "title": "test",
-                    "director": "tester",
-                    "releaseYear": 2025
-                  }
-                """));
+                          {
+                            "id": "1",
+                            "title": "test",
+                            "director": "tester",
+                            "releaseYear": 2025
+                          }
+                        """));
     }
 
     @Test
@@ -95,8 +95,7 @@ class MovieIntegrationTest {
 
     @Test
     @DirtiesContext
-    void deleteMovie_whenFound_removesMovie() throws Exception
-    {
+    void deleteMovie_whenFound_removesMovie() throws Exception {
         // GIVEN
         MovieData movie = new MovieData("1", "Test Movie", "Test Director", 2000);
         movieRepo.save(movie);
@@ -108,8 +107,7 @@ class MovieIntegrationTest {
     }
 
     @Test
-    void deleteMovie_whenNotFound_returnsNotFound() throws Exception
-    {
+    void deleteMovie_whenNotFound_returnsNotFound() throws Exception {
         // WHEN & THEN
         mvc.perform(delete("/api/movie/999")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -117,21 +115,26 @@ class MovieIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void saveMovie_whenSaved_returnObject() throws Exception {
-        String expected = """
-        {
-            "id": "1",
-            "title":"Movie",
-            "director":"Director",
-            "releaseYear": "2025"
-        }
-        """;
-
         mvc.perform(post("/api/movie")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(expected))
+                        .content("""
+                                {
+                                    "id": "1",
+                                    "title":"Movie",
+                                    "director":"Director",
+                                    "releaseYear": 2025
+                                }
+                                """))
                 .andExpect(status().isOk())
-                .andExpect(content().json(expected));
+                .andExpect(content().json("""
+                        {
+                            "title":"Movie",
+                            "director":"Director",
+                            "releaseYear": 2025
+                        }
+                        """))
+                .andExpect(jsonPath("$.id").isNotEmpty());
     }
-
 }

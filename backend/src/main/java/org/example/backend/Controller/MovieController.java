@@ -1,6 +1,7 @@
 package org.example.backend.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.DTOs.MovieDto;
 import org.example.backend.Data.MovieData;
 import org.example.backend.Service.MovieService;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,11 @@ public class MovieController
         {
             throw new NoSuchElementException("Movie with ID: " + id + " not found");
         }
+    }
+
+    @PostMapping
+    public MovieData saveMovie(@RequestBody MovieDto newMovie) {
+        return movieService.saveMovie(newMovie);
     }
 
 }
