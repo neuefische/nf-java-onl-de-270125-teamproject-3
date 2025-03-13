@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import './App.css';
+import {Route, Routes} from "react-router";
 
 interface Movie {
     id: string;
@@ -53,13 +54,19 @@ function App() {
         getMovie("67d1702820ade63ce409e544")
     }, [])
 
-  return (
-    movies.map((movie) => <div key={movie.id}>
-        <h3>{movie.title}</h3>
-        <p>{movie.director}</p>
-        <p>{movie.releaseYear}</p>
-    </div>)
-  )
+  return <>
+      <Routes>
+          <Route path="/:id" element={<Movie/>}>
+      </Routes>
+          {!movies && <p>Loading Movies...</p>}
+          {movies?.map((movie) =>
+              <div key={movie.id}>
+                  <h3>{movie.title}</h3>
+                  <p>{movie.director}</p>
+                  <p>{movie.releaseYear}</p>
+              </div>)
+          }
+  </>
 }
 
 export default App
