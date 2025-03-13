@@ -18,12 +18,14 @@ public class MovieController
 
 
     @GetMapping
-    public List<MovieData> getMovies() {
+    public List<MovieData> getMovies()
+    {
         return movieService.getMovies();
     }
 
     @GetMapping("{id}")
-    public MovieData getMovie(@PathVariable String id) {
+    public MovieData getMovie(@PathVariable String id)
+    {
         Optional<MovieData> movie = movieService.getMovie(id);
         if(movie.isPresent()) {
             return movie.get();
