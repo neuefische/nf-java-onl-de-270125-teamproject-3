@@ -35,38 +35,6 @@ interface Movie {
     releaseYear: number;
 }
 
-/*
-Single Movie GET
-
-interface Movie {
-    id: string;
-    title: string;
-    director: string;
-    releaseYear: number;
-}
-
-const [movie, setMovie] = useState<Movie>();
-const baseURL = "/api/movie"
-const getMovie = (id:string) => {
-    console.log(`Fetching Movie with ${id}...`)
-
-    axios.get(`${baseURL}/${id}`)
-        .then((response) => {
-            console.log("Request finished")
-            console.log(response.data)
-            setMovie(response.data)
-        })
-        .catch((errorResponse) => {
-            console.log(errorResponse)
-        })
-
-    console.log("Movie fetched successfully!")
-}
-useEffect(() => {
-    getMovie("67d1702820ade63ce409e544")
-}, [])
- */
-
 const MainLayout: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
 
