@@ -35,6 +35,8 @@ interface Movie {
     releaseYear: number;
 }
 
+export type { Movie };
+
 const MainLayout: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
 

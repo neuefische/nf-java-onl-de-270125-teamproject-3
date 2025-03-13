@@ -1,7 +1,7 @@
-import { useParams } from "react-router";
+import {useNavigate, useParams} from "react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, Container } from "@mui/material";
+import {Box, Typography, Container, Button} from "@mui/material";
 
 interface Movie {
     id: string;
@@ -39,6 +39,8 @@ export const SingleMovie = () => {
         }
     }, [id]);
 
+    const navigate = useNavigate();
+
     if (!movie) {
         return <div>Loading...</div>;
     }
@@ -72,6 +74,12 @@ export const SingleMovie = () => {
                 <Typography variant="h5" color="text.secondary">
                     Release Year: {movie.releaseYear}
                 </Typography>
+                {/* in the callback: pass the movie data as props from SingleMovie to EditMovie using React Router's useNavigate with state */}
+                <Button onClick={() => navigate(`/${movie.id}/edit`, {state: movie})}
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}>
+                    Edit
+                </Button>
             </Box>
         </Container>
     );
