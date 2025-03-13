@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     AppBar,
     Toolbar,
@@ -26,7 +26,40 @@ import AddIcon from "@mui/icons-material/Add";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
+import axios from "axios";
+
+interface Movie {
+    id: string;
+    title: string;
+    director: string;
+    releaseYear: number;
+}
+
 const MainLayout: React.FC = () => {
+    const [movies, setMovies] = useState<Movie[]>([]);
+
+    const baseURL = "/api/movie"
+
+    const getMovies = () => {
+        console.log("Fetching Movies...")
+
+        axios.get(baseURL)
+            .then((response) => {
+                console.log("Request finished")
+                console.log(response.data)
+                setMovies(response.data)
+            })
+            .catch((errorResponse) => {
+                console.log(errorResponse)
+            })
+
+        console.log("Movies fetched successfully!")
+    }
+
+    useEffect(() => {
+        getMovies();
+    }, [])
+
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
 
@@ -36,12 +69,6 @@ const MainLayout: React.FC = () => {
     const theme = createTheme({
         palette: { mode: darkMode ? "dark" : "light" },
     });
-
-    const movies = [
-        { id: 1, title: "Inception", director: "Christopher Nolan", releaseYear: 2010 },
-        { id: 2, title: "The Matrix", director: "Lana Wachowski, Lilly Wachowski", releaseYear: 1999 },
-        { id: 3, title: "Interstellar", director: "Christopher Nolan", releaseYear: 2014 },
-    ];
 
     return (
         <ThemeProvider theme={theme}>
