@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -101,5 +102,45 @@ class MovieServiceTest {
         // THEN
         verify(repo, never()).deleteById(anyString());
         assertFalse(deleted);
+    }
+
+    @Test
+    void updateMovie_whenFound_returnMovie() {
+        // GIVEN
+        String targetId = "2";
+        MovieData updatedMovie = new MovieData(targetId, "wuff", "dog", 2000);
+        when(repo.existsById(targetId)).thenReturn(true);
+        when(repo.save(updatedMovie)).thenReturn(updatedMovie);
+
+        // WHEN
+        MovieData actual = service.updateMovie(targetId, updatedMovie);
+
+        // THEN
+        MovieData expected = updatedMovie;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateMovie_whenNotFound_throwNoSuchElementException() {
+        // GIVEN
+        String targetId = "3";
+        MovieData updatedMovie = new MovieData(targetId, "wuff", "dog", 2000);
+        when(repo.existsById(targetId)).thenReturn(false);
+        when(repo.save(updatedMovie)).thenReturn(updatedMovie); //line actually not required for test
+
+        // WHEN + THEN
+        assertThrows(NoSuchElementException.class, () -> service.updateMovie(targetId, updatedMovie));
+    }
+
+    @Test
+    void updateMovie_whenFound_throwIllegalArgumentException() {
+        // GIVEN
+        String targetId = "3";
+        MovieData updatedMovie = new MovieData(targetId + "***", "wuff", "dog", 2000);
+        when(repo.existsById(targetId)).thenReturn(true);
+        when(repo.save(updatedMovie)).thenReturn(updatedMovie);
+
+        // WHEN + THEN
+        assertThrows(IllegalArgumentException.class, () -> service.updateMovie(targetId, updatedMovie));
     }
 }

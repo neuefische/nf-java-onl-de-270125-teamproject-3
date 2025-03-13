@@ -12,8 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -116,6 +116,87 @@ class MovieIntegrationTest {
         mvc.perform(delete("/api/movie/999")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+    @Test
+    @DirtiesContext
+    void updateMovie_whenFound_returnMovie() throws Exception {
+        // GIVEN
+        MovieData movie = new MovieData("1", "Number 1", "Alan Smithee", 1000);
+        movieRepo.save(movie);
+        // WHEN
+        mvc.perform(put("/api/movie/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                                  {
+                                    "id": "1",
+                                    "title": "Pi",
+                                    "director": "Darren Aronofsky",
+                                    "releaseYear": 1999
+                                  }
+                                """
+                        )
+                )
+                // THEN
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                  {
+                    "id": "1",
+                    "title": "Pi",
+                    "director": "Darren Aronofsky",
+                    "releaseYear": 1999
+                  }
+                """));
+    }
+
+    @Test
+    void updateMovie_whenNotFound_throwNoSuchElementException() throws Exception {
+        // GIVEN
+        String targetId = "1";
+        // movie repo is empty
+
+        // WHEN
+        mvc.perform(put("/api/movie/" + targetId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                                  {
+                                    "id": "1",
+                                    "title": "Pi",
+                                    "director": "Darren Aronofsky",
+                                    "releaseYear": 1999
+                                  }
+                                """
+                        )
+                )
+                // THEN
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("No movie found with the id " + targetId));
+    }
+
+    @Test
+    @DirtiesContext
+    void updateMovie_whenFound_throwIllegalArgumentException() throws Exception {
+        // GIVEN
+        MovieData movie = new MovieData("1", "Number 1", "Alan Smithee", 1000);
+        movieRepo.save(movie);
+        // WHEN
+        mvc.perform(put("/api/movie/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                                  {
+                                    "id": "2",
+                                    "title": "Pi",
+                                    "director": "Darren Aronofsky",
+                                    "releaseYear": 1999
+                                  }
+                                """
+                        )
+                )
+                // THEN
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("ID in path and body do not match"));
     }
 
 }
