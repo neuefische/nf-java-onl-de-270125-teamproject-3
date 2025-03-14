@@ -27,6 +27,7 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 import axios from "axios";
+import {useNavigate} from "react-router";
 
 interface Movie {
     id: string;
@@ -38,6 +39,7 @@ interface Movie {
 const MainLayout: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
 
+    const navigate = useNavigate()
     const baseURL = "/api/movie"
 
     const getMovies = () => {
@@ -210,6 +212,14 @@ const MainLayout: React.FC = () => {
                                         <Typography variant="body2" color="text.secondary">
                                             Release Year: {movie.releaseYear}
                                         </Typography>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            fullWidth
+                                            onClick={() => navigate(`/${movie.id}`)}
+                                        >
+                                            View Details
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             </Grid2>
