@@ -38,6 +38,11 @@ interface Movie {
 
 const MainLayout: React.FC = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+
+    const moviesToDisplay = searchQuery ?
+        movies.filter(movie => movie.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        : movies;
 
     const navigate = useNavigate()
     const baseURL = "/api/movie"
@@ -132,6 +137,8 @@ const MainLayout: React.FC = () => {
                         <TextField
                             fullWidth
                             variant="outlined"
+                            value={searchQuery}
+                            onChange = {(event) => setSearchQuery(event.target.value)}
                             placeholder="Search movies..."
                             sx={{ marginBottom: "1rem" }}
                         />
@@ -185,7 +192,7 @@ const MainLayout: React.FC = () => {
                 >
                     {/* Movie Grid */}
                     <Grid2 container spacing={3}>
-                        {movies.map((movie) => (
+                        {moviesToDisplay.map((movie) => (
                             // @ts-expect-error: Component requires props not yet typed
                             <Grid2
                                 xs={12}
