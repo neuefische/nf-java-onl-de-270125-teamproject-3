@@ -1,6 +1,6 @@
 import {Movie} from "./MainLayout.tsx";
 import {Link, useLocation, useNavigate, useParams} from "react-router";
-import {ChangeEvent, FormEvent, useState} from "react";
+import {ChangeEvent, FormEvent, useEffect, useState} from "react";
 import {Box, Button, TextField} from "@mui/material";
 import axios from "axios";
 
@@ -8,11 +8,39 @@ export default function EditMovieForm() {
     const navigate = useNavigate();
     const location = useLocation();
     // when visiting directly a page like http://localhost:5173/67d182be20ade63ce409e551/edit
-    // location.state ist null
+    // location.state is null
     const [updatingMovie, setUpdatingMovie] = useState<Movie>(location.state);
 
     const { id } = useParams<{ id: string }>();
     const baseURL = "/api/movie";
+
+    // ###########################################
+    const getUpdatingMovie = (id: string) => {
+        console.log(`Fetching Movie with ${id}...`);
+
+        axios
+            .get(`${baseURL}/${id}`)
+            .then((response) => {
+                console.log("Request finished");
+                console.log(response.data);
+                setUpdatingMovie(response.data);
+            })
+            .catch((error) => {
+                console.error("Error setting up the request:", error.message);
+                navigate("/");
+            });
+    };
+
+    useEffect(() => {
+        if (id) {
+            if (location.state && (location.state as Movie).id === id) {
+                setUpdatingMovie(location.state as Movie);
+            } else {
+                getUpdatingMovie(id);
+            }
+        }
+    }, [id, location.state]);
+    // ###########################################
 
     const handleSaveMovie = (event: FormEvent<HTMLFormElement> ) => {
         event.preventDefault();
@@ -24,9 +52,7 @@ export default function EditMovieForm() {
                     if (response.status >= 200 && response.status < 300) {
                         // Process the response data
                         console.log('PUT request successful:', response.data);
-
                         navigate(`/${updatingMovie.id}`)
-
                     } else {
                         console.error('PUT request failed with status:', response.status);
                         console.error('Response data:', response.data); // Log response data
@@ -58,7 +84,7 @@ export default function EditMovieForm() {
                     id="title"
                     label="Title"
                     name="title"
-                    value={updatingMovie.title}
+                    value={updatingMovie?.title || ""}
                     onChange={handleChange}
                 />
                 <TextField
@@ -68,7 +94,7 @@ export default function EditMovieForm() {
                     id="director"
                     label="Director"
                     name="director"
-                    value={updatingMovie.director}
+                    value={updatingMovie?.director || ""}
                     onChange={handleChange}
                 />
                 <TextField
@@ -78,7 +104,7 @@ export default function EditMovieForm() {
                     id="releaseYear"
                     label="Release Year"
                     name="releaseYear"
-                    value={updatingMovie.releaseYear}
+                    value={updatingMovie?.releaseYear || ""}
                     onChange={handleChange}
                 />
                 <Button type="submit"
