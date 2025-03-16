@@ -1,5 +1,5 @@
 import {Movie} from "./MainLayout.tsx";
-import {useLocation, useNavigate, useParams} from "react-router";
+import {Link, useLocation, useNavigate, useParams} from "react-router";
 import {ChangeEvent, FormEvent, useState} from "react";
 import {Box, Button, TextField} from "@mui/material";
 import axios from "axios";
@@ -7,7 +7,8 @@ import axios from "axios";
 export default function EditMovieForm() {
     const navigate = useNavigate();
     const location = useLocation();
-
+    // when visiting directly a page like http://localhost:5173/67d182be20ade63ce409e551/edit
+    // location.state ist null
     const [updatingMovie, setUpdatingMovie] = useState<Movie>(location.state);
 
     const { id } = useParams<{ id: string }>();
@@ -35,13 +36,15 @@ export default function EditMovieForm() {
             .catch(
                 error => console.error("Error setting up the request:", error.message)
             )
-
-
-
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setUpdatingMovie({...updatingMovie, [event.target.name]: event.target.value});
+    }
+
+    const handleOncClickCancel = () => {
+        // here passing state updatingMovie to this route, so that SingleMovie component doesn't need to get request this movie again
+        navigate(`/${updatingMovie.id}`, { state: updatingMovie });
     }
 
     return (
@@ -83,9 +86,10 @@ export default function EditMovieForm() {
                         sx={{ mt: 3, mb: 2, mr: 2}}>
                     Save
                 </Button>
-                <Button onClick={() => navigate(`/${updatingMovie.id}`)}
+                <Button onClick={handleOncClickCancel}
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}>Cancel</Button>
+                <Link to={`/${id}`}>Cancel via Link</Link>
             </Box>
 
         </div>

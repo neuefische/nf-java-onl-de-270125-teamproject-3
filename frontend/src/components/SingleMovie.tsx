@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router";
+import {useNavigate, useParams, useLocation} from "react-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {Box, Typography, Container, Button} from "@mui/material";
@@ -15,6 +15,7 @@ export const SingleMovie = () => {
     const [movie, setMovie] = useState<Movie | null>(null);
     const { id } = useParams();
     const baseURL = "/api/movie";
+    const location = useLocation();
 
     const getMovie = (id: string) => {
         console.log(`Fetching Movie with ${id}...`);
@@ -35,9 +36,13 @@ export const SingleMovie = () => {
 
     useEffect(() => {
         if (id) {
-            getMovie(id);
+            if (location.state && (location.state as Movie).id === id) {
+                setMovie(location.state as Movie);
+            } else {
+                getMovie(id);
+            }
         }
-    }, [id]);
+    }, [id, location.state]);
 
     const navigate = useNavigate();
 
