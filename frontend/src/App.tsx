@@ -3,6 +3,7 @@ import React from 'react'
 import './App.css'
 import {Route, Routes} from "react-router";
 import {SingleMovie} from "./components/SingleMovie.tsx";
+import EditMovieForm from "./components/EditMovieForm.tsx";
 
 const App: React.FC = () =>
 {
@@ -10,6 +11,7 @@ const App: React.FC = () =>
         <Routes>
             <Route path="/" element={<MainLayout />} />
             <Route path="/:id" element={<SingleMovie />} />
+            <Route path="/:id/edit" element={<EditMovieForm />} />
         </Routes>
     );
 };
