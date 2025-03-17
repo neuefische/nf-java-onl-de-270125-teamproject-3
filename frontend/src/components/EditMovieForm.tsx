@@ -1,37 +1,35 @@
-import {Movie} from "./MainLayout.tsx";
-import {Link, useLocation, useNavigate, useParams} from "react-router";
-import {ChangeEvent, FormEvent, useEffect, useState} from "react";
-import {Box, Button, TextField} from "@mui/material";
+import { Movie } from "./MainLayout.tsx";
+import { useLocation, useNavigate, useParams, Link } from "react-router";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { Box, Button, TextField, CircularProgress } from "@mui/material";
 import axios from "axios";
 
 export default function EditMovieForm() {
     const navigate = useNavigate();
     const location = useLocation();
-    // when visiting directly a page like http://localhost:5173/67d182be20ade63ce409e551/edit
-    // location.state is null
-    const [updatingMovie, setUpdatingMovie] = useState<Movie>(location.state);
-
     const { id } = useParams<{ id: string }>();
     const baseURL = "/api/movie";
 
-    // ###########################################
-    const getUpdatingMovie = (id: string) => {
-        console.log(`Fetching Movie with ${id}...`);
+    const [updatingMovie, setUpdatingMovie] = useState<Movie | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
+    const getUpdatingMovie = (id: string) => {
+        setLoading(true);
         axios
             .get(`${baseURL}/${id}`)
             .then((response) => {
-                console.log("Request finished");
-                console.log(response.data);
                 setUpdatingMovie(response.data);
+                setLoading(false);
             })
             .catch((error) => {
-                console.error("Error setting up the request:", error.message);
-                navigate("/");
+                setError(error.message);
+                setLoading(false);
             });
     };
 
     useEffect(() => {
+     // without the first if clause for id the linter would complain inside that id could be undefined
         if (id) {
             if (location.state && (location.state as Movie).id === id) {
                 setUpdatingMovie(location.state as Movie);
@@ -40,37 +38,57 @@ export default function EditMovieForm() {
             }
         }
     }, [id, location.state]);
-    // ###########################################
 
-    const handleSaveMovie = (event: FormEvent<HTMLFormElement> ) => {
+    const handleSaveMovie = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setLoading(true);
 
         axios.put(`${baseURL}/${id}`, updatingMovie)
-            .then(
-                response => {
-                    // Handle successful response (status code 200-299)
-                    if (response.status >= 200 && response.status < 300) {
-                        // Process the response data
-                        console.log('PUT request successful:', response.data);
-                        navigate(`/${updatingMovie.id}`)
-                    } else {
-                        console.error('PUT request failed with status:', response.status);
-                        console.error('Response data:', response.data); // Log response data
-                    }
+            .then((response) => {
+                if (response.status >= 200 && response.status < 300) {
+                    console.log('PUT request successful:', response.data);
+                    navigate(`/${updatingMovie?.id}`, { state: updatingMovie });
+                } else {
+                    console.error('PUT request failed with status:', response.status);
+                    console.error('Response data:', response.data);
                 }
-            )
-            .catch(
-                error => console.error("Error setting up the request:", error.message)
-            )
+                setLoading(false);
+            })
+            .catch((error) => {
+                setError(error.message);
+                setLoading(false);
+            });
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setUpdatingMovie({...updatingMovie, [event.target.name]: event.target.value});
+        if (updatingMovie) {
+            setUpdatingMovie({ ...updatingMovie, [event.target.name]: event.target.value });
+        }
+    };
+
+    const handleCancelClick = () => {
+        if (updatingMovie) {
+            navigate(`/${updatingMovie.id}`, { state: updatingMovie });
+        }
+    };
+
+    if (loading) {
+        return (
+            <div>
+                <CircularProgress />
+            </div>
+        );
     }
 
-    const handleOncClickCancel = () => {
-        // here passing state updatingMovie to this route, so that SingleMovie component doesn't need to get request this movie again
-        navigate(`/${updatingMovie.id}`, { state: updatingMovie });
+    if (error) {
+        return (
+            <div>
+                <h2>Error</h2>
+                <p>{error}</p>
+                <Link to={"/"}>Back to main page</Link>
+
+            </div>
+        );
     }
 
     return (
@@ -109,16 +127,16 @@ export default function EditMovieForm() {
                 />
                 <Button type="submit"
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, mr: 2}}>
+                        sx={{ mt: 3, mb: 2, mr: 2 }}
+                        disabled={loading}>
                     Save
                 </Button>
-                <Button onClick={handleOncClickCancel}
+                <Button onClick={handleCancelClick}
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}>Cancel</Button>
-                <Link to={`/${id}`}>Cancel via Link</Link>
+                        sx={{ mt: 3, mb: 2 }}>
+                    Cancel
+                </Button>
             </Box>
-
         </div>
-    )
-
+    );
 }
