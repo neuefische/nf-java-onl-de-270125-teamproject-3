@@ -45,7 +45,8 @@ export default function EditMovieForm() {
 
         axios.put(`${baseURL}/${id}`, updatingMovie)
             .then((response) => {
-                if (response.status >= 200 && response.status < 300) {
+                // if (response.status >= 200 && response.status < 300) {
+                if (response.status === 200) {
                     console.log('PUT request successful:', response.data);
                     navigate(`/${updatingMovie?.id}`, { state: updatingMovie });
                 } else {
