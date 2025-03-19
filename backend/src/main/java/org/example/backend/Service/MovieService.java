@@ -1,6 +1,7 @@
 package org.example.backend.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.DTOs.MovieDto;
 import org.example.backend.Data.MovieData;
 import org.example.backend.Data.MovieRepo;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public class MovieService
 {
     private final MovieRepo movieRepo;
+    private final IdService idService;
 
     public List<MovieData> getMovies() {
         return movieRepo.findAll();
@@ -46,4 +48,9 @@ public class MovieService
         return movieRepo.save(updatedMovie);
     }
 
+    public MovieData saveMovie(MovieDto newMovie){
+        String id = idService.randomId();
+        MovieData movieToSave = new MovieData(id, newMovie.title(), newMovie.director(), newMovie.releaseYear());
+        return movieRepo.save(movieToSave);
+    }
 }

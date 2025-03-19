@@ -2,6 +2,7 @@ package org.example.backend.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.backend.DTOs.CustomErrorMessage;
+import org.example.backend.DTOs.MovieDto;
 import org.example.backend.Data.MovieData;
 import org.example.backend.Service.MovieService;
 import org.springframework.http.HttpStatus;
@@ -57,6 +58,11 @@ public class MovieController
                     .status(HttpStatus.BAD_REQUEST)
                     .body( new CustomErrorMessage(e.getMessage(), Instant.now()) );
         }
+    }
+
+    @PostMapping
+    public MovieData saveMovie(@RequestBody MovieDto newMovie) {
+        return movieService.saveMovie(newMovie);
     }
 
 }

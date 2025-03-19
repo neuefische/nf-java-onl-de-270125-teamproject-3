@@ -1,8 +1,9 @@
 package org.example.backend.DTOs;
 
-public class MovieDto
-{
-    String title;
-    String director;
-    int releaseYear;
+public record MovieDto(
+        String title,
+        String director,
+        int releaseYear
+) {
 }
+

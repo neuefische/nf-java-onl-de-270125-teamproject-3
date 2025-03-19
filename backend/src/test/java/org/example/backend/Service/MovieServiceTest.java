@@ -1,5 +1,6 @@
 package org.example.backend.Service;
 
+import org.example.backend.DTOs.MovieDto;
 import org.example.backend.Data.MovieData;
 import org.example.backend.Data.MovieRepo;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,14 +17,17 @@ class MovieServiceTest {
 
     private MovieRepo repo;
     private MovieService service;
+    private final IdService idService = mock(IdService.class);
 
     private MovieData movie1, movie2;
+    private MovieDto movieDto1;
 
     @BeforeEach
     void setUp() {
         repo = mock(MovieRepo.class);
-        service = new MovieService(repo);
+        service = new MovieService(repo, idService);
 
+        movieDto1 = new MovieDto("test", "tester", 2025);
         movie1 = new MovieData("1", "test", "tester", 2025);
         movie2 = new MovieData("2", "meow", "cat", 2000);
     }
@@ -142,5 +146,19 @@ class MovieServiceTest {
 
         // WHEN + THEN
         assertThrows(IllegalArgumentException.class, () -> service.updateMovie(targetId, updatedMovie));
+    }
+
+    @Test
+    void saveMovie_whenSuccessful_thenReturnObject() {
+        // GIVEN
+        MovieData expected = movie1;
+        when(idService.randomId()).thenReturn("1");
+        when(repo.save(expected)).thenReturn(expected);
+        // WHEN
+        MovieData actual = service.saveMovie(movieDto1);
+        // THEN
+        verify(idService).randomId();
+        verify(repo).save(movie1);
+        assertEquals(expected, actual);
     }
 }

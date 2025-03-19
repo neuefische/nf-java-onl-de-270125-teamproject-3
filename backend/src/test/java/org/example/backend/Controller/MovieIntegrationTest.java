@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -199,4 +200,27 @@ class MovieIntegrationTest {
                 .andExpect(jsonPath("$.message").value("ID in path and body do not match"));
     }
 
+    @Test
+    @DirtiesContext
+    void saveMovie_whenSaved_returnObject() throws Exception {
+        mvc.perform(post("/api/movie")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "id": "1",
+                                    "title":"Movie",
+                                    "director":"Director",
+                                    "releaseYear": 2025
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                        {
+                            "title":"Movie",
+                            "director":"Director",
+                            "releaseYear": 2025
+                        }
+                        """))
+                .andExpect(jsonPath("$.id").isNotEmpty());
+    }
 }

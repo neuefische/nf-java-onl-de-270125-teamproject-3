@@ -132,6 +132,7 @@ const MainLayout: React.FC = () => {
                             color="primary"
                             startIcon={<AddIcon />}
                             fullWidth
+                            onClick={() => navigate('/add')}
                             sx={{ marginBottom: "1rem" }}
                         >
                             Add Movie
