@@ -25,6 +25,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import AddIcon from "@mui/icons-material/Add";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import DeleteButton from "./DeleteButton";
 
 import axios from "axios";
 import {useNavigate} from "react-router";
@@ -119,10 +120,14 @@ const MainLayout: React.FC = () => {
                     anchor="left"
                     open={sidebarOpen}
                     sx={{
-                        "& .MuiDrawer-paper": { width: 260, boxSizing: "border-box" },
+                        "& .MuiDrawer-paper": {
+                            width: 260,
+                            boxSizing: "border-box",
+                            position: "fixed", // Prevent content shrinking
+                        },
                     }}
                 >
-                    <Box sx={{ padding: "1rem" }}>
+                <Box sx={{ padding: "1rem" }}>
                         {/* Sidebar Content */}
                         <Typography variant="h6" gutterBottom>
                             Movie Tools
@@ -194,6 +199,8 @@ const MainLayout: React.FC = () => {
                     }}
                 >
                     {/* Movie Grid */}
+                    <Box sx={{ display: "flex", padding: "24px" }}>
+
                     <Grid2 container spacing={3}>
                         {moviesToDisplay.map((movie) => (
                             // @ts-expect-error: Component requires props not yet typed
@@ -210,7 +217,6 @@ const MainLayout: React.FC = () => {
                                         component="img"
                                         height="140"
                                         image="https://via.placeholder.com/300x140?text=Movie+Image"
-                                        alt="Movie Poster"
                                     />
                                     <CardContent>
                                         <Typography gutterBottom variant="h6">
@@ -230,11 +236,13 @@ const MainLayout: React.FC = () => {
                                         >
                                             View Details
                                         </Button>
+                                        <DeleteButton movieId={movie.id} movieTitle={movie.title} onDeleteSuccess={getMovies}/>
                                     </CardContent>
                                 </Card>
                             </Grid2>
                         ))}
                     </Grid2>
+                    </Box>
                 </Box>
             </Box>
         </ThemeProvider>
